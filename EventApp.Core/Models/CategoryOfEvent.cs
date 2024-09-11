@@ -2,6 +2,7 @@
 {
     public class CategoryOfEvent
     {
+       
         public CategoryOfEvent(Guid id, string title)
         {
             Id = id;

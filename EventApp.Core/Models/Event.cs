@@ -24,5 +24,6 @@ public class Event
         Members = members ?? new List<MemberOfEvent>();
         ImageUrl = imageUrl;
     }
+    
 }
 
