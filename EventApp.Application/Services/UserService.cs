@@ -32,9 +32,10 @@ public class UserService : IUserService
             {
                 throw new InvalidLoginException("Invalid username or password");
             }
+
             return user;
         }
-        catch (Exception e)
+        catch (InvalidOperationException e)
         {
             throw new InvalidOperationException(e.Message);
         }
