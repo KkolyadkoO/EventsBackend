@@ -7,10 +7,10 @@ namespace EventApp.DataAccess.Repositories;
 
 public class MembersOfEventRepository : IMembersOfEventRepository
 {
-    private readonly EventAppDBContext _dbContex;
+    private readonly EventAppDbContext _dbContex;
     private readonly IMapper _mapper;
     
-    public MembersOfEventRepository(EventAppDBContext dbContext, IMapper mapper)
+    public MembersOfEventRepository(EventAppDbContext dbContext, IMapper mapper)
     {
         _dbContex = dbContext;
         _mapper = mapper;

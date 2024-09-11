@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace EventApp.DataAccess.Migrations
 {
-    [DbContext(typeof(EventAppDBContext))]
+    [DbContext(typeof(EventAppDbContext))]
     partial class EventAppDBContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

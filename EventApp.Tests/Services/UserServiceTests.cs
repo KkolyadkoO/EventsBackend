@@ -97,7 +97,7 @@ public class UserServiceTests
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidLoginException>(() => _userService.Login(username, password));
-        Assert.Equal("Invalid username or password", exception.Message);
+        Assert.Equal("Invalid password", exception.Message);
         _userRepositoryMock.Verify(r => r.GetByLogin(It.IsAny<string>()), Times.Once);
         _passwordHasherMock.Verify(h => h.VerifyHashedPassword(user.Password, password), Times.Once);
     }

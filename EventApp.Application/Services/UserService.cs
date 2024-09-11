@@ -30,7 +30,7 @@ public class UserService : IUserService
             var user = await _unitOfWork.Users.GetByLogin(username);
             if (!_passwordHasher.VerifyHashedPassword(user.Password, password))
             {
-                throw new InvalidLoginException("Invalid username or password");
+                throw new InvalidLoginException("Invalid password");
             }
 
             return user;

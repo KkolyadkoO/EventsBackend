@@ -6,7 +6,7 @@ namespace EventApp.DataAccess;
 
 public class UnitOfWork : IUnitOfWork
 {
-    private readonly EventAppDBContext _context;
+    private readonly EventAppDbContext _context;
     private readonly IMapper _mapper;
 
     public ICategoryOfEventsRepository Categories { get; private set; }
@@ -14,7 +14,7 @@ public class UnitOfWork : IUnitOfWork
     public IMembersOfEventRepository Members { get; private set; }
     public IUserRepository Users { get; }
 
-    public UnitOfWork(EventAppDBContext context, IMapper mapper)
+    public UnitOfWork(EventAppDbContext context, IMapper mapper)
     {
         _context = context;
         _mapper = mapper;

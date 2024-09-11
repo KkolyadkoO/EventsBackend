@@ -53,10 +53,10 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 builder.Services.AddAutoMapper(typeof(EntitiesProfile));
-builder.Services.AddDbContext<EventAppDBContext>(
+builder.Services.AddDbContext<EventAppDbContext>(
     options =>
     {
-        options.UseNpgsql(configuration.GetConnectionString(nameof(EventAppDBContext)));
+        options.UseNpgsql(configuration.GetConnectionString(nameof(EventAppDbContext)));
     });
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IPasswordHasher,PasswordHasher>();

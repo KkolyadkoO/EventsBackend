@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace EventApp.DataAccess.Migrations
 {
-    [DbContext(typeof(EventAppDBContext))]
+    [DbContext(typeof(EventAppDbContext))]
     [Migration("20240831140441_rebild_links_event")]
     partial class rebild_links_event
     {

@@ -9,9 +9,9 @@ namespace EventApp.DataAccess.Repositories;
 public class UserRepository : IUserRepository
 {
     private readonly IMapper _mapper;
-    private readonly EventAppDBContext _dbContex;
+    private readonly EventAppDbContext _dbContex;
 
-    public UserRepository(EventAppDBContext dbContext, IMapper mapper)
+    public UserRepository(EventAppDbContext dbContext, IMapper mapper)
     {
         _dbContex = dbContext;
         _mapper = mapper;

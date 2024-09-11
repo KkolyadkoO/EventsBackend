@@ -7,10 +7,10 @@ namespace EventApp.DataAccess.Repositories;
 
 public class CategoryOfEventsRepository : ICategoryOfEventsRepository
 {
-    private readonly EventAppDBContext _dbContext;
+    private readonly EventAppDbContext _dbContext;
     private readonly IMapper _mapper;
     
-    public CategoryOfEventsRepository(EventAppDBContext dbContext, IMapper mapper)
+    public CategoryOfEventsRepository(EventAppDbContext dbContext, IMapper mapper)
     {
         _dbContext = dbContext;
         _mapper = mapper;
@@ -43,23 +43,27 @@ public class CategoryOfEventsRepository : ICategoryOfEventsRepository
 
     public async Task<Guid> Add(Guid id, string title)
     {
+        var existingCategory = await _dbContext.CategoryOfEventEntities
+            .AsNoTracking()
+            .FirstOrDefaultAsync(c => c.Title == title);
+
+        if (existingCategory != null)
+        {
+            throw new InvalidOperationException("Category with the same title already exists.");
+        }
+
         var categoryOfEvent = new CategoryOfEventEntity
         {
             Id = id,
             Title = title,
         };
 
-        try
-        {
-            await _dbContext.CategoryOfEventEntities.AddAsync(categoryOfEvent);
-        }
-        catch (DbUpdateException ex)
-        {
-                throw new InvalidOperationException("Category with the same title already exists. " + ex.Message);
-        }
+        await _dbContext.CategoryOfEventEntities.AddAsync(categoryOfEvent);
+        await _dbContext.SaveChangesAsync();
 
         return categoryOfEvent.Id;
     }
+
     public async Task<Guid> Update(Guid id, string title)
     {
         await _dbContext.CategoryOfEventEntities

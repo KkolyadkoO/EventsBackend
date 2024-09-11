@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace EventApp.DataAccess.Migrations
 {
-    [DbContext(typeof(EventAppDBContext))]
+    [DbContext(typeof(EventAppDbContext))]
     [Migration("20240831141104_unique_title_of_category")]
     partial class unique_title_of_category
     {
