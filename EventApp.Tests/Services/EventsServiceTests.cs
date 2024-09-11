@@ -206,4 +206,28 @@ public class EventsServiceTests
         // Assert
         Assert.Equal(eventId, result);
     }
+    
+    [Fact]
+    public async Task UpdateEvent_ThrowsInvalidOperationException_OnFailure()
+    {
+        // Arrange
+        var eventId = Guid.NewGuid();
+        var title = "Event Title";
+        var location = "Event Location";
+        var date = DateTime.Now;
+        var categoryId = Guid.NewGuid();
+        var description = "Event Description";
+        var maxNumberOfMembers = 100;
+        var imageUrl = "http://example.com/image.jpg";
+
+        _unitOfWorkMock.Setup(u => u.Events.Update(eventId, title, location, date, categoryId, description, maxNumberOfMembers, imageUrl))
+            .ThrowsAsync(new Exception("Test exception"));
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            _eventsService.UpdateEvent(eventId, title, location, date, categoryId, description, maxNumberOfMembers, imageUrl));
+
+        Assert.Equal("Test exception", exception.Message);
+    }
+
 }
