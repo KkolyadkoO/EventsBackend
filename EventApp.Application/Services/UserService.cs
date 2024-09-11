@@ -25,11 +25,10 @@ public class UserService : IUserService
 
     public async Task<User> Login(string username, string password)
     {
-        var hashedPassword = _passwordHasher.HashPassword(password);
         try
         {
             var user = await _unitOfWork.Users.GetByLogin(username);
-            if (_passwordHasher.VerifyHashedPassword(hashedPassword, user.Password))
+            if (!_passwordHasher.VerifyHashedPassword(user.Password, password))
             {
                 throw new InvalidLoginException("Invalid username or password");
             }
