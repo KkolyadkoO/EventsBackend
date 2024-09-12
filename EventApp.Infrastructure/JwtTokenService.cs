@@ -21,20 +21,17 @@ public class JwtTokenService : IJwtTokenService
 
         var claims = new[]
         {
-            new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
-            new Claim(JwtRegisteredClaimNames.UniqueName, userName),
-            new Claim(ClaimTypes.Role, role),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            new Claim("UserId", userId.ToString()),
+            new Claim("UserName", userName),
+            new Claim(ClaimTypes.Role, role)
         };
         
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var token = new JwtSecurityToken(
-            issuer: jwtSettings["Issuer"],
-            audience: jwtSettings["Audience"],
             claims: claims,
-            expires: DateTime.Now.AddMinutes(double.Parse(jwtSettings["ExpiresInMinutes"])),
+            expires: DateTime.Now.AddHours(double.Parse(jwtSettings["ExpiresHours"])),
             signingCredentials: creds
         );
 

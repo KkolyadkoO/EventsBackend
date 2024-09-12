@@ -12,10 +12,10 @@ namespace EventApp.Controllers;
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
-    private readonly JwtTokenService _jwtTokenService;
+    private readonly IJwtTokenService _jwtTokenService;
     private readonly IUserService _userService;
 
-    public AuthController(JwtTokenService jwtTokenService, IUserService userService)
+    public AuthController(IJwtTokenService jwtTokenService, IUserService userService)
     {
         _jwtTokenService = jwtTokenService;
         _userService = userService;
@@ -28,7 +28,8 @@ public class AuthController : ControllerBase
         {
             var user = await _userService.Login(model.Username, model.Password);
             var token = _jwtTokenService.GenerateToken( user.Id, model.Username, user.Role);
-            return Ok(new { Token = token });
+            HttpContext.Response.Cookies.Append("token", token);
+            return Ok(token);
 
         }
         catch (Exception e)

@@ -6,6 +6,7 @@ using EventApp.DataAccess.MapperProfiler;
 using EventApp.DataAccess.Repositories;
 using EventApp.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -17,13 +18,11 @@ var configuration = builder.Configuration;
 // Add services to the container.
 builder.Services.AddControllers();
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "EventApp API", Version = "v1" });
 
-    // Добавляем поддержку Bearer токенов
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Description = "JWT Authorization header using the Bearer scheme (Example: 'Bearer 12345abcdef')",
@@ -58,6 +57,8 @@ builder.Services.AddDbContext<EventAppDBContext>(
     {
         options.UseNpgsql(configuration.GetConnectionString(nameof(EventAppDBContext)));
     });
+
+builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IPasswordHasher,PasswordHasher>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -65,7 +66,6 @@ builder.Services.AddScoped<IEventsService, EventsService>();
 builder.Services.AddScoped<ICategoryOfEventsService, CategoryOfEventsService>();
 builder.Services.AddScoped<IMembersOfEventService, MembersOfEventService>();
 
-builder.Services.AddScoped<JwtTokenService>();
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AdminOnly", policy => 
@@ -76,13 +76,19 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuer = true,
-            ValidateAudience = true,
             ValidateLifetime = true,
+            ValidateAudience = false, 
+            ValidateIssuer = false,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = configuration["Jwt:Issuer"],
-            ValidAudience = configuration["Jwt:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]))
+        };
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                context.Token = context.Request.Cookies["token"];
+                return Task.CompletedTask;
+            }
         };
     });
 
@@ -91,7 +97,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowLocalhost3000",
         policy =>
         {
-            policy.WithOrigins("http://localhost:3000") // Разрешаем localhost:3000
+            policy.WithOrigins("http://localhost:3000")
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });
@@ -99,7 +105,6 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -110,6 +115,13 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCookiePolicy(new CookiePolicyOptions
+{
+    MinimumSameSitePolicy = SameSiteMode.Strict,
+    HttpOnly = HttpOnlyPolicy.Always,
+    Secure = CookieSecurePolicy.Always
+});
 
 app.UseAuthentication();
 app.UseAuthorization();
