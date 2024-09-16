@@ -19,8 +19,16 @@ public class UserService : IUserService
     {
         var hashedPassword = _passwordHasher.HashPassword(password);
         var user = new User(Guid.NewGuid(), username, email, hashedPassword, role);
-        await _unitOfWork.Users.Create(user);
-        await _unitOfWork.Complete();
+        try
+        {
+            await _unitOfWork.Users.Create(user);
+            await _unitOfWork.Complete();
+        }
+        catch (Exception e)
+        {
+            throw new DuplicateUsers("A user with this login already exists", e);
+        }
+
     }
 
     public async Task<User> Login(string username, string password)

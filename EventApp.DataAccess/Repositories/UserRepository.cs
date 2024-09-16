@@ -1,4 +1,5 @@
 using AutoMapper;
+using EventApp.Core.Exceptions;
 using EventApp.Core.Models;
 using EventApp.DataAccess.Entities;
 using EventApp.Infrastructure;
@@ -32,7 +33,7 @@ public class UserRepository : IUserRepository
             .FirstOrDefaultAsync(u => u.UserEmail == email);
         return _mapper.Map<User>(user);
     }
-    
+
     public async Task<User> GetByLogin(string login)
     {
         var user = await _dbContex.UserEntities
@@ -42,6 +43,7 @@ public class UserRepository : IUserRepository
         {
             throw new InvalidOperationException("User not found");
         }
+
         return _mapper.Map<User>(user);
     }
 
@@ -56,6 +58,7 @@ public class UserRepository : IUserRepository
             UserEmail = user.UserEmail,
             Role = user.Role
         };
+
         await _dbContex.UserEntities.AddAsync(createdUser);
         return createdUser.Id;
     }

@@ -18,8 +18,16 @@ public class UserController : ControllerBase
     [HttpPost("register")]
     public async Task<IResult> RegisterUser([FromBody] UserRegisterRequest request)
     {
-        await _userService.Register(request.Username,request.UserEmail, request.Password, request.Role);
-        return Results.Ok();
+        try
+        {
+            await _userService.Register(request.Username,request.UserEmail, request.Password, request.Role);
+            return Results.Ok();
+        }
+        catch (Exception e)
+        {
+            return Results.BadRequest(e.Message);
+        }
+        
     }
     
     [HttpGet]
