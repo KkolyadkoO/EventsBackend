@@ -1,15 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Moq;
-using Xunit;
+using EventApp.Application;
 using EventApp.Core.Abstractions;
 using EventApp.Core.Exceptions;
 using EventApp.Core.Models;
-using EventApp.Application;
 using EventApp.DataAccess.Repositories;
 using EventApp.Infrastructure;
-using Microsoft.AspNetCore.Identity;
+using Moq;
+using Xunit;
+
+namespace EventApp.Tests.Services;
 
 public class UserServiceTests
 {

@@ -1,9 +1,11 @@
-using Moq;
-using Xunit;
+using EventApp.Application;
 using EventApp.Core.Abstractions;
 using EventApp.Core.Models;
-using EventApp.Application;
 using EventApp.DataAccess.Repositories;
+using Moq;
+using Xunit;
+
+namespace EventApp.Tests.Services;
 
 public class EventsServiceTests
 {
