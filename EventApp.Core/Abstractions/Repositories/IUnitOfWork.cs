@@ -8,5 +8,6 @@ public interface IUnitOfWork : IDisposable
     IEventsRepository Events { get; }
     IMembersOfEventRepository Members { get; }
     IUserRepository Users { get; }
+    IRefreshTokenRepository RefreshTokens { get; }
     Task<int> Complete();
 }

@@ -33,6 +33,13 @@ public class UserRepository : IUserRepository
             .FirstOrDefaultAsync(u => u.UserEmail == email);
         return _mapper.Map<User>(user);
     }
+    public async Task<User> GetById(Guid id)
+    {
+        var user = await _dbContex.UserEntities
+            .AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Id == id);
+        return _mapper.Map<User>(user);
+    }
 
     public async Task<User> GetByLogin(string login)
     {

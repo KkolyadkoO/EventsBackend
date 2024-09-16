@@ -28,7 +28,7 @@ public class AuthController : ControllerBase
         {
             var user = await _userService.Login(model.Username, model.Password);
             var token = _jwtTokenService.GenerateToken( user.Id, model.Username, user.Role);
-            HttpContext.Response.Cookies.Append("token", token);
+            HttpContext.Response.Cookies.Append("token", token.Item1);
             return Ok(token);
 
         }
@@ -36,5 +36,25 @@ public class AuthController : ControllerBase
         {
             return Unauthorized(e.Message);
         }
+    }
+    [HttpPost("refresh-token")]
+    public async Task<IActionResult> RefreshToken([FromBody] string refreshToken)
+    {
+        var storedRefreshToken = await _unitOfWork.RefreshTokenRepository.GetToken(refreshToken);
+
+        if (storedRefreshToken == null || storedRefreshToken.IsRevoked || storedRefreshToken.Expires < DateTime.Now)
+        {
+            return Unauthorized("Invalid or expired refresh token");
+        }
+
+        var user = await _unitOfWork.UserRepository.GetUserById(storedRefreshToken.UserId);
+        var tokens = _jwtTokenService.GenerateTokens(user.Id, user.UserName, user.Role);
+
+        // Обновить refreshToken
+        storedRefreshToken.Token = tokens.refreshToken;
+        storedRefreshToken.Expires = DateTime.Now.AddDays(7);
+        await _unitOfWork.CompleteAsync();
+
+        return Ok(new { accessToken = tokens.accessToken, refreshToken = tokens.refreshToken });
     }
 }

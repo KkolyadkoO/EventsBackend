@@ -22,4 +22,3 @@ public class EventConfiguration : IEntityTypeConfiguration<EventEntity>
             .OnDelete(DeleteBehavior.Restrict);
     }
 }
-

@@ -10,6 +10,8 @@ public class EventAppDBContext(DbContextOptions<EventAppDBContext> options) : Db
     public DbSet<MemberOfEventEntity> MemberOfEventEntities { get; set; }
     public DbSet<CategoryOfEventEntity> CategoryOfEventEntities { get; set; }
     public DbSet<UserEntity> UserEntities { get; set; }
+    
+    public DbSet<RefreshTokenEntity> RefreshTokenEntities { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -18,6 +20,7 @@ public class EventAppDBContext(DbContextOptions<EventAppDBContext> options) : Db
         modelBuilder.ApplyConfiguration(new EventCategoryConfiguration());
         modelBuilder.ApplyConfiguration(new MemberOfEventConfiguration());
         modelBuilder.ApplyConfiguration(new UserConfiguration());
+        modelBuilder.ApplyConfiguration(new RefreshTokenConfiguration());
 
         base.OnModelCreating(modelBuilder);
     }
