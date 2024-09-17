@@ -12,10 +12,10 @@ public class EntitiesProfile : Profile
 
         CreateMap<UserEntity, User>().ReverseMap();
 
+        CreateMap<RefreshTokenEntity, RefreshToken>().ReverseMap();
+
         CreateMap<CategoryOfEventEntity, CategoryOfEvent>().ReverseMap();
 
         CreateMap<EventEntity, Event>().ReverseMap();
-
-        CreateMap<RefreshTokenEntity, RefreshToken>().ReverseMap();
     }
 }

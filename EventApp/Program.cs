@@ -65,6 +65,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IEventsService, EventsService>();
 builder.Services.AddScoped<ICategoryOfEventsService, CategoryOfEventsService>();
 builder.Services.AddScoped<IMembersOfEventService, MembersOfEventService>();
+builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 
 builder.Services.AddAuthorization(options =>
 {

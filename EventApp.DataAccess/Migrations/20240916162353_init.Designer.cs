@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EventApp.DataAccess.Migrations
 {
     [DbContext(typeof(EventAppDBContext))]
-    [Migration("20240831135521_init")]
+    [Migration("20240916162353_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -36,6 +36,9 @@ namespace EventApp.DataAccess.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Title")
+                        .IsUnique();
 
                     b.ToTable("CategoryOfEventEntities");
                 });
@@ -73,6 +76,8 @@ namespace EventApp.DataAccess.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CategoryId");
+
                     b.ToTable("EventEntities");
                 });
 
@@ -92,9 +97,6 @@ namespace EventApp.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("EventEntityId")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid>("EventId")
                         .HasColumnType("uuid");
 
@@ -106,19 +108,42 @@ namespace EventApp.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("UserEntityId")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EventId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("MemberOfEventEntities");
+                });
+
+            modelBuilder.Entity("EventApp.DataAccess.Entities.RefreshTokenEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("Expires")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EventEntityId");
+                    b.HasIndex("UserId");
 
-                    b.HasIndex("UserEntityId");
-
-                    b.ToTable("MemberOfEventEntities");
+                    b.ToTable("RefreshTokenEntities");
                 });
 
             modelBuilder.Entity("EventApp.DataAccess.Entities.UserEntity", b =>
@@ -145,18 +170,46 @@ namespace EventApp.DataAccess.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("UserEmail")
+                        .IsUnique();
+
+                    b.HasIndex("UserName")
+                        .IsUnique();
+
                     b.ToTable("UserEntities");
+                });
+
+            modelBuilder.Entity("EventApp.DataAccess.Entities.EventEntity", b =>
+                {
+                    b.HasOne("EventApp.DataAccess.Entities.CategoryOfEventEntity", null)
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("EventApp.DataAccess.Entities.MemberOfEventEntity", b =>
                 {
                     b.HasOne("EventApp.DataAccess.Entities.EventEntity", null)
                         .WithMany("Members")
-                        .HasForeignKey("EventEntityId");
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("EventApp.DataAccess.Entities.UserEntity", null)
                         .WithMany("MemberOfEvents")
-                        .HasForeignKey("UserEntityId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("EventApp.DataAccess.Entities.RefreshTokenEntity", b =>
+                {
+                    b.HasOne("EventApp.DataAccess.Entities.UserEntity", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("EventApp.DataAccess.Entities.EventEntity", b =>

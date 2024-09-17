@@ -2,13 +2,12 @@ namespace EventApp.Core.Models;
 
 public class RefreshToken
 {
-    public RefreshToken(Guid id, Guid userId, string token, DateTime expires, bool revoked)
+    public RefreshToken(Guid id, Guid userId, string token, DateTime expires)
     {
         Id = id;
         UserId = userId;
         Token = token;
         Expires = expires;
-        IsRevoked = revoked;
     }
     
 
@@ -16,5 +15,4 @@ public class RefreshToken
     public Guid UserId { get; }
     public string Token { get; set; }
     public DateTime Expires { get; set; }
-    public bool IsRevoked { get; }
 }

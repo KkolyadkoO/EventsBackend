@@ -126,9 +126,6 @@ namespace EventApp.DataAccess.Migrations
                     b.Property<DateTime>("Expires")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<bool>("IsRevoked")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("Token")
                         .IsRequired()
                         .HasColumnType("text");

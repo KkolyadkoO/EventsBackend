@@ -31,7 +31,6 @@ public class UserServiceTests
     [Fact]
     public async Task Register_CreatesUserAndCommitsTransaction()
     {
-        // Arrange
         var username = "testUser";
         var email = "test@example.com";
         var password = "password";
@@ -40,10 +39,8 @@ public class UserServiceTests
 
         _passwordHasherMock.Setup(ph => ph.HashPassword(password)).Returns(hashedPassword);
 
-        // Act
         await _userService.Register(username, email, password, role);
-
-        // Assert
+        
         _userRepositoryMock.Verify(repo => repo.Create(It.Is<User>(u =>
             u.UserName == username && u.UserEmail == email && u.Password == hashedPassword && u.Role == role)), Times.Once);
         _unitOfWorkMock.Verify(u => u.Complete(), Times.Once);
@@ -52,10 +49,9 @@ public class UserServiceTests
     [Fact]
     public async Task Login_ReturnsUser_WhenCredentialsAreValid()
     {
-        // Arrange
         var username = "testuser";
         var password = "testpassword";
-        var hashedPassword = "hashedTestPassword";  // Это хэшированный пароль
+        var hashedPassword = "hashedTestPassword";  
         var user = new User(Guid.NewGuid(), username, "testuser@example.com", hashedPassword, "user");
 
         _userRepositoryMock
@@ -63,13 +59,11 @@ public class UserServiceTests
             .ReturnsAsync(user);
 
         _passwordHasherMock
-            .Setup(h => h.VerifyHashedPassword(user.Password, password))  // Проверка хэша пароля
+            .Setup(h => h.VerifyHashedPassword(user.Password, password))  
             .Returns(true);
 
-        // Act
         var result = await _userService.Login(username, password);
 
-        // Assert
         Assert.NotNull(result);
         Assert.Equal(username, result.UserName);
         _userRepositoryMock.Verify(r => r.GetByLogin(It.IsAny<string>()), Times.Once);
@@ -79,7 +73,6 @@ public class UserServiceTests
     [Fact]
     public async Task Login_ThrowsInvalidLoginException_WhenPasswordIsInvalid()
     {
-        // Arrange
         var username = "testuser";
         var password = "testpassword";
         var hashedPassword = "hashedTestPassword";
@@ -91,9 +84,8 @@ public class UserServiceTests
 
         _passwordHasherMock
             .Setup(h => h.VerifyHashedPassword(user.Password, password))
-            .Returns(false);  // Возвращаем false, если пароли не совпадают
+            .Returns(false);  
 
-        // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidLoginException>(() => _userService.Login(username, password));
         Assert.Equal("Invalid username or password", exception.Message);
         _userRepositoryMock.Verify(r => r.GetByLogin(It.IsAny<string>()), Times.Once);
@@ -103,14 +95,12 @@ public class UserServiceTests
     [Fact]
     public async Task Login_ThrowsInvalidOperationException_WhenUserNotFound()
     {
-        // Arrange
         var username = "nonExistentUser";
         var password = "password";
 
         _passwordHasherMock.Setup(ph => ph.HashPassword(password)).Returns("hashedPassword");
         _userRepositoryMock.Setup(repo => repo.GetByLogin(username)).ThrowsAsync(new InvalidOperationException("User not found"));
 
-        // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _userService.Login(username, password));
         Assert.Equal("User not found", exception.Message);
     }
@@ -118,7 +108,6 @@ public class UserServiceTests
     [Fact]
     public async Task GetAllUsers_ReturnsListOfUsers()
     {
-        // Arrange
         var users = new List<User>
         {
             new User(Guid.NewGuid(), "User1", "user1@example.com", "password1", "user"),
@@ -127,10 +116,8 @@ public class UserServiceTests
 
         _userRepositoryMock.Setup(repo => repo.Get()).ReturnsAsync(users);
 
-        // Act
         var result = await _userService.GetAllUsers();
 
-        // Assert
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);
         Assert.Equal("User1", result[0].UserName);
@@ -140,17 +127,15 @@ public class UserServiceTests
     [Fact]
     public async Task Register_ThrowsException_WhenRepositoryThrows()
     {
-        // Arrange
         var username = "testUser";
         var email = "test@example.com";
         var password = "password";
         var role = "user";
 
         _passwordHasherMock.Setup(ph => ph.HashPassword(password)).Returns("hashedPassword");
-        _userRepositoryMock.Setup(repo => repo.Create(It.IsAny<User>())).ThrowsAsync(new InvalidOperationException("Test exception"));
+        _userRepositoryMock.Setup(repo => repo.Create(It.IsAny<User>())).ThrowsAsync(new DuplicateUsers("A user with this login already exists"));
 
-        // Act & Assert
-        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => _userService.Register(username, email, password, role));
-        Assert.Equal("Test exception", exception.Message);
+        var exception = await Assert.ThrowsAsync<DuplicateUsers>(() => _userService.Register(username, email, password, role));
+        Assert.Equal("A user with this login already exists", exception.Message);
     }
 }

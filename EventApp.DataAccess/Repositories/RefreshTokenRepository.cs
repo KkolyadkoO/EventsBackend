@@ -18,7 +18,7 @@ public class RefreshTokenRepository : IRefreshTokenRepository
     }
 
 
-    public async Task<Guid> Create(Guid userId, string token, DateTime expires, bool isRevoked)
+    public async Task<Guid> Create(Guid userId, string token, DateTime expires)
     {
         var rt = new RefreshTokenEntity
         {
@@ -26,9 +26,17 @@ public class RefreshTokenRepository : IRefreshTokenRepository
             UserId = userId,
             Token = token,
             Expires = expires,
-            IsRevoked = isRevoked
         };
-        await _dbContex.RefreshTokenEntities.AddAsync(rt);
+        try
+        {
+            await _dbContex.RefreshTokenEntities.AddAsync(rt);
+        }
+        catch (DbUpdateException ex)
+        {
+            throw new InvalidOperationException("Category with the same title already exists. " + ex.Message);
+        }
+
+
         return rt.Id;
     }
 
@@ -41,14 +49,22 @@ public class RefreshTokenRepository : IRefreshTokenRepository
         return _mapper.Map<RefreshToken>(token);
     }
 
-    public async Task<Guid> Update(Guid tokenId, Guid userId, string token, DateTime expires, bool isRevoked)
+    public async Task<RefreshToken> GetByUserId(Guid userId)
+    {
+        var token =  await _dbContex.RefreshTokenEntities
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.UserId == userId) ?? throw new RefreshTokenNotFound("Refresh token not found");
+
+       return _mapper.Map<RefreshToken>(token);
+    }
+
+    public async Task<string> Update(Guid tokenId, Guid userId, string token, DateTime expires)
     {
         await _dbContex.RefreshTokenEntities
             .Where(rt => rt.Id == tokenId)
             .ExecuteUpdateAsync(rt =>
                 rt.SetProperty(r => r.Expires, expires)
-                    .SetProperty(r => r.IsRevoked, isRevoked)
                     .SetProperty(r => r.Token, token));
-        return tokenId;
+        return token;
     }
 }

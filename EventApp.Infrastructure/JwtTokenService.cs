@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using EventApp.Core.Abstractions;
+using EventApp.Core.Exceptions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
@@ -19,7 +20,8 @@ public class JwtTokenService : IJwtTokenService
         _unitOfWork = unitOfWork;
     }
     
-    public (string accessToken, string refreshToken) GenerateToken(Guid userId, string userName, string role)
+    public async Task<(string accessToken, string refreshToken)> GenerateToken(Guid userId, string userName,
+        string role)
     {
         var jwtSettings = _configuration.GetSection("Jwt");
 
@@ -38,14 +40,33 @@ public class JwtTokenService : IJwtTokenService
             expires: DateTime.Now.AddMinutes(double.Parse(jwtSettings["ExpiresMinutes"])),
             signingCredentials: creds
         );
-        
-        var refreshToken = GenerateRefreshToken();
         var accessToken = new JwtSecurityTokenHandler().WriteToken(token);
-        _unitOfWork.RefreshTokens.Create(userId, refreshToken, 
-            DateTime.Now.AddMinutes(double.Parse(jwtSettings["RefreshTokenMinutes"])),
-            false);
-        _unitOfWork.Complete();
-        return (accessToken, refreshToken );
+        try
+        {
+            var refreshToken = await _unitOfWork.RefreshTokens.GetByUserId(userId);
+            var newRefreshToken = refreshToken.Token;
+            if (refreshToken.Expires < DateTime.Now.ToUniversalTime())
+            {
+                newRefreshToken = await _unitOfWork.RefreshTokens.Update(refreshToken.Id, userId, GenerateRefreshToken(),
+                    DateTime.Now.ToUniversalTime().AddDays(double.Parse(jwtSettings["RefreshTokenExpiresDay"])));
+                await _unitOfWork.Complete();
+            }
+            return (accessToken, newRefreshToken);
+
+        }
+        catch (RefreshTokenNotFound)
+        {
+            var refreshToken = GenerateRefreshToken();
+            await _unitOfWork.RefreshTokens.Create(userId, refreshToken,
+                DateTime.Now.ToUniversalTime().AddDays(double.Parse(jwtSettings["RefreshTokenExpiresDay"])));
+            await _unitOfWork.Complete();
+            return (accessToken, refreshToken);
+        }
+        catch (Exception e)
+        {
+            throw new Exception(e.Message);
+        }
+        
     }
     public string GenerateRefreshToken()
     {

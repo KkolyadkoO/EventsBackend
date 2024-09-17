@@ -4,7 +4,8 @@ namespace EventApp.DataAccess.Repositories;
 
 public interface IRefreshTokenRepository
 {
-    Task<Guid> Create(Guid userId, string token, DateTime expires, bool isRevoked);
+    Task<Guid> Create(Guid userId, string token, DateTime expires);
     Task<RefreshToken> Get(string refreshToken);
-    Task<Guid> Update(Guid tokenId, Guid userId, string token, DateTime expires, bool isRevoked);
+    Task<RefreshToken> GetByUserId(Guid userId);
+    Task<string> Update(Guid tokenId, Guid userId, string token, DateTime expires);
 }

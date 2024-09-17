@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EventApp.DataAccess.Migrations
 {
     [DbContext(typeof(EventAppDBContext))]
-    [Migration("20240831140441_rebild_links_event")]
-    partial class rebild_links_event
+    [Migration("20240916201323_RefreshTokenUpdate")]
+    partial class RefreshTokenUpdate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -36,6 +36,9 @@ namespace EventApp.DataAccess.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Title")
+                        .IsUnique();
 
                     b.ToTable("CategoryOfEventEntities");
                 });
@@ -117,6 +120,29 @@ namespace EventApp.DataAccess.Migrations
                     b.ToTable("MemberOfEventEntities");
                 });
 
+            modelBuilder.Entity("EventApp.DataAccess.Entities.RefreshTokenEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("Expires")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshTokenEntities");
+                });
+
             modelBuilder.Entity("EventApp.DataAccess.Entities.UserEntity", b =>
                 {
                     b.Property<Guid>("Id")
@@ -140,6 +166,12 @@ namespace EventApp.DataAccess.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserEmail")
+                        .IsUnique();
+
+                    b.HasIndex("UserName")
+                        .IsUnique();
 
                     b.ToTable("UserEntities");
                 });
@@ -165,6 +197,15 @@ namespace EventApp.DataAccess.Migrations
                         .WithMany("MemberOfEvents")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("EventApp.DataAccess.Entities.RefreshTokenEntity", b =>
+                {
+                    b.HasOne("EventApp.DataAccess.Entities.UserEntity", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
