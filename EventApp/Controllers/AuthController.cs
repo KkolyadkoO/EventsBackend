@@ -41,8 +41,13 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("refresh-token")]
-    public async Task<IActionResult> RefreshToken([FromBody] string refreshToken)
+    public async Task<IActionResult> RefreshToken()
     {
+        string? refreshToken = Request.Cookies["refresh_token"];
+        if (string.IsNullOrEmpty(refreshToken))
+        {
+            return Unauthorized();
+        }
         var tokens = await _refreshTokenService.RefreshToken(refreshToken);
         HttpContext.Response.Cookies.Append("refresh_token", tokens.Item2);
         var tokensResponse = new TokensResponse(tokens.Item1, tokens.Item2);
