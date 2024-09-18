@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EventApp.Controllers;
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class CategoryOfEventsController : ControllerBase
 {
     private readonly ICategoryOfEventsService _categoryOfEventsService;
