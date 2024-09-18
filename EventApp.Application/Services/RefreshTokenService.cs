@@ -14,7 +14,7 @@ public class RefreshTokenService : IRefreshTokenService
         _unitOfWork = unitOfWork;
         _jwtTokenService = jwtTokenService;
     }
-    
+
     public async Task<(string, string)> RefreshToken(string refreshToken)
     {
         try
@@ -24,6 +24,7 @@ public class RefreshTokenService : IRefreshTokenService
             {
                 throw new InvalidRefreshToken("Invalid or expired refresh token");
             }
+
             var user = await _unitOfWork.Users.GetById(storedRefreshToken.UserId);
             var tokens = await _jwtTokenService.GenerateToken(user.Id, user.UserName, user.Role);
             await _unitOfWork.Complete();
@@ -34,11 +35,5 @@ public class RefreshTokenService : IRefreshTokenService
         {
             throw new RefreshTokenNotFound(e.Message);
         }
-                          
-
-
-
-
-       
     }
 }
