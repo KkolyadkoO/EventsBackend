@@ -30,10 +30,9 @@ public class AuthController : ControllerBase
             var user = await _userService.Login(model.Username, model.Password);
             var usersResponse = new UsersResponse(user.Id, user.UserName, user.UserEmail, user.Role);
             var tokens = await _jwtTokenService.GenerateToken(user.Id, model.Username, user.Role);
-            HttpContext.Response.Cookies.Append("token", tokens.Item1);
             HttpContext.Response.Cookies.Append("refresh_token", tokens.Item2);
             var tokensResponse = new TokensResponse(tokens.Item1, tokens.Item2);
-            return Ok(usersResponse);
+            return Ok(new {usersResponse, tokensResponse});
         }
         catch (Exception e)
         {
@@ -45,7 +44,6 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> RefreshToken([FromBody] string refreshToken)
     {
         var tokens = await _refreshTokenService.RefreshToken(refreshToken);
-        HttpContext.Response.Cookies.Append("token", tokens.Item1);
         HttpContext.Response.Cookies.Append("refresh_token", tokens.Item2);
         var tokensResponse = new TokensResponse(tokens.Item1, tokens.Item2);
 

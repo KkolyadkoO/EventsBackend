@@ -67,4 +67,16 @@ public class RefreshTokenRepository : IRefreshTokenRepository
                     .SetProperty(r => r.Token, token));
         return token;
     }
+
+    public async Task<string> Delete(string refreshToken)
+    {
+        var rowAffected =  await _dbContex.RefreshTokenEntities
+            .Where(rt => rt.Token == refreshToken)
+            .ExecuteDeleteAsync();
+        if (rowAffected == 0)
+        {
+            throw new RefreshTokenNotFound("Refresh token not found");
+        }
+        return refreshToken;
+    }
 }

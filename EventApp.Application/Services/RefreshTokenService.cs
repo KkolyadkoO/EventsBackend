@@ -36,4 +36,16 @@ public class RefreshTokenService : IRefreshTokenService
             throw new RefreshTokenNotFound(e.Message);
         }
     }
+
+    public async Task<string> DeleteRefreshToken(string refreshToken)
+    {
+        try
+        {
+            return await _unitOfWork.RefreshTokens.Delete(refreshToken);
+        }
+        catch (Exception e)
+        {
+            throw new RefreshTokenNotFound(e.Message);
+        }
+    }
 }
