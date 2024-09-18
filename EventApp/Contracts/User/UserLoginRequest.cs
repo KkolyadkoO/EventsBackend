@@ -2,6 +2,6 @@ namespace EventApp.Controllers;
 
 public record UserLoginRequest
 (
-    string Username,
+    string UserName,
     string Password
 );
