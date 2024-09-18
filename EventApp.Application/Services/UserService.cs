@@ -54,4 +54,17 @@ public class UserService : IUserService
         var users = await _unitOfWork.Users.Get();
         return users;
     }
+
+    public async Task<User> GetUserById(Guid id)
+    {
+        try
+        {
+            var user = await _unitOfWork.Users.GetById(id);
+            return user;
+        }
+        catch (Exception e)
+        {
+            throw new UserNotFound(e.Message);
+        }
+    }
 }

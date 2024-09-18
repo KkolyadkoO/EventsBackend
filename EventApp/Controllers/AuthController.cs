@@ -40,7 +40,7 @@ public class AuthController : ControllerBase
         }
     }
 
-    [HttpPost("refresh-token")]
+    [HttpGet("refresh")]
     public async Task<IActionResult> RefreshToken()
     {
         string? refreshToken = Request.Cookies["refresh_token"];
@@ -51,7 +51,10 @@ public class AuthController : ControllerBase
         var tokens = await _refreshTokenService.RefreshToken(refreshToken);
         HttpContext.Response.Cookies.Append("refresh_token", tokens.Item2);
         var tokensResponse = new TokensResponse(tokens.Item1, tokens.Item2);
+        var rt = await _refreshTokenService.GetRefreshToken(refreshToken);
+        var user = await _userService.GetUserById(rt.UserId);
+        var usersResponse = new UsersResponse(user.Id, user.UserName, user.UserEmail, user.Role);
 
-        return Ok(tokensResponse);
+        return Ok(new {usersResponse, tokensResponse});
     }
 }

@@ -1,5 +1,6 @@
 using EventApp.Core.Abstractions;
 using EventApp.Core.Exceptions;
+using EventApp.Core.Models;
 using EventApp.Infrastructure;
 
 namespace EventApp.Application;
@@ -42,6 +43,18 @@ public class RefreshTokenService : IRefreshTokenService
         try
         {
             return await _unitOfWork.RefreshTokens.Delete(refreshToken);
+        }
+        catch (Exception e)
+        {
+            throw new RefreshTokenNotFound(e.Message);
+        }
+    }
+
+    public async Task<RefreshToken> GetRefreshToken(string refreshToken)
+    {
+        try
+        {
+            return await _unitOfWork.RefreshTokens.Get(refreshToken);
         }
         catch (Exception e)
         {

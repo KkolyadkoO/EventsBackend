@@ -37,7 +37,7 @@ public class UserRepository : IUserRepository
     {
         var user = await _dbContex.UserEntities
             .AsNoTracking()
-            .FirstOrDefaultAsync(u => u.Id == id);
+            .FirstOrDefaultAsync(u => u.Id == id) ?? throw new UserNotFound("User does not exist");
         return _mapper.Map<User>(user);
     }
 
