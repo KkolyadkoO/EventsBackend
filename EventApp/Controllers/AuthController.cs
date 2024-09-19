@@ -46,7 +46,7 @@ public class AuthController : ControllerBase
         string? refreshToken = Request.Cookies["refresh_token"];
         if (string.IsNullOrEmpty(refreshToken))
         {
-            return Unauthorized();
+            return Unauthorized("Refresh token is empty");
         }
         var tokens = await _refreshTokenService.RefreshToken(refreshToken);
         HttpContext.Response.Cookies.Append("refresh_token", tokens.Item2);
