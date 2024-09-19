@@ -21,6 +21,7 @@ public class EventsRepository : IEventsRepository
     {
         var eventEntities = await _dbContex.EventEntities
             .AsNoTracking()
+            .Include(e => e.Members)
             .OrderBy(e => e.Date)
             .ToListAsync();
         return _mapper.Map<List<Event>>(eventEntities);
@@ -30,6 +31,7 @@ public class EventsRepository : IEventsRepository
     {
         var findedEvent =  await _dbContex.EventEntities
             .AsNoTracking()
+            .Include(e => e.Members)
             .FirstOrDefaultAsync(e => e.Id == id);
         return _mapper.Map<Event>(findedEvent);
     }
@@ -38,6 +40,7 @@ public class EventsRepository : IEventsRepository
     {
         var findedEvent = await _dbContex.EventEntities
             .AsNoTracking()
+            .Include(e => e.Members)
             .FirstOrDefaultAsync(e => e.Title == title);
         return _mapper.Map<Event?>(findedEvent);
     }
@@ -70,7 +73,11 @@ public class EventsRepository : IEventsRepository
             query = query.Where(e => e.Date <= endDate.Value);
         }
 
-        var events = await query.OrderBy(e => e.Date).ToListAsync();
+        var events = await query
+            .AsNoTracking()
+            .Include(e => e.Members)
+            .OrderBy(e => e.Date)
+            .ToListAsync();
         return _mapper.Map<List<Event>>(events);
     }
 
@@ -78,6 +85,7 @@ public class EventsRepository : IEventsRepository
     {
         var events = await _dbContex.EventEntities
             .AsNoTracking()
+            .Include(e => e.Members)
             .Skip((page - 1) * size)
             .Take(size)
             .ToListAsync();

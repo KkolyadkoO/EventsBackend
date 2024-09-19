@@ -7,5 +7,7 @@ public record EventsResponse(
       DateTime Date,
       string Location,
       Guid CategoryId,
+      int MaxNumberOfMembers,
+      int NumberOfMembers,
       string ImageUrl
   );
