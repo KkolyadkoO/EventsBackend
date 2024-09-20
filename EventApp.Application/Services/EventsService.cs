@@ -29,15 +29,16 @@ public class EventsService : IEventsService
         return await _unitOfWork.Events.GetByTitle(title);
     }
 
-    public async Task<List<Event?>> GetEventByFilters(string? title, string? location, DateTime? startDate,
-        DateTime? endDate, Guid? category, int? page, int? size)
+    public async Task<(List<Event?>, int)> GetEventByFilters(string? title, string? location, DateTime? startDate,
+        DateTime? endDate, Guid? category, Guid? userId, int? page, int? size)
     {
         return await _unitOfWork.Events.GetByFilters(
             title,
-            location, 
-            startDate, 
-            endDate, 
+            location,
+            startDate,
+            endDate,
             category,
+            userId,
             page,
             size
         );
@@ -60,7 +61,6 @@ public class EventsService : IEventsService
         {
             throw new InvalidOperationException(e.Message);
         }
-        
     }
 
     public async Task<Guid> UpdateEvent(Guid id, string title, string location, DateTime date, Guid category,
@@ -68,7 +68,8 @@ public class EventsService : IEventsService
     {
         try
         {
-            return await _unitOfWork.Events.Update(id, title, location, date, category, description, maxNumberOfMembers, imageUrl);
+            return await _unitOfWork.Events.Update(id, title, location, date, category, description, maxNumberOfMembers,
+                imageUrl);
         }
         catch (Exception e)
         {
@@ -80,6 +81,4 @@ public class EventsService : IEventsService
     {
         return await _unitOfWork.Events.Delete(id);
     }
-
-   
 }

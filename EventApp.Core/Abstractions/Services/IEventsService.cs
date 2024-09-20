@@ -8,8 +8,8 @@ public interface IEventsService
     Task<Event?> GetEventById(Guid id);
     Task<Event?> GetEventByTitle(string title);
 
-    Task<List<Event?>> GetEventByFilters(string? title, string? location, DateTime? startDate,
-        DateTime? endDate, Guid? category, int? page, int? size);
+    Task<(List<Event?>, int)> GetEventByFilters(string? title, string? location, DateTime? startDate,
+        DateTime? endDate, Guid? category, Guid? userId, int? page, int? size);
 
     Task<List<Event>> GetEventByPage(int page, int size);
     Task<Guid> AddEvent(Event receivedEvent);

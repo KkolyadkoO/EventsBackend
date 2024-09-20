@@ -45,10 +45,16 @@ public class EventsRepository : IEventsRepository
         return _mapper.Map<Event?>(findedEvent);
     }
 
-    public async Task<List<Event?>> GetByFilters(string? title, string? location, DateTime? startDate,
-        DateTime? endDate, Guid? categoryId, int? page, int? size)
+    public async Task<(List<Event?>,int)> GetByFilters(string? title, string? location, DateTime? startDate,
+        DateTime? endDate, Guid? categoryId, Guid? userId, int? page, int? size)
     {
         var query = _dbContex.EventEntities.AsNoTracking();
+
+        if (userId.HasValue && userId != Guid.Empty)
+        {
+            query = query.Where(e => e.Members.Any(m => m.UserId == userId));
+        }
+        
         if (!string.IsNullOrWhiteSpace(title))
         {
             query = query.Where(e => e.Title.Contains(title));
@@ -74,6 +80,7 @@ public class EventsRepository : IEventsRepository
         }
 
         query = query.OrderBy(e => e.Date);
+        var countOfEvents = query.Count();
         
         if (page.HasValue && size.HasValue)
         {
@@ -84,7 +91,7 @@ public class EventsRepository : IEventsRepository
             .AsNoTracking()
             .Include(e => e.Members)
             .ToListAsync();
-        return _mapper.Map<List<Event>>(events);
+        return (_mapper.Map<List<Event>>(events), countOfEvents);
     }
 
     public async Task<List<Event>> GetByPage(int page, int size)

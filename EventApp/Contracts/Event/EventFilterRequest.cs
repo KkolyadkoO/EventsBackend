@@ -6,6 +6,7 @@ public record EventFilterRequest(
     DateTime? StartDate = null,
     DateTime? EndDate = null,
     Guid? Category = null,
-    int? page = null,
-    int? pageSize = null
+    Guid? UserId = null,
+    int? Page = null,
+    int? PageSize = null
 );

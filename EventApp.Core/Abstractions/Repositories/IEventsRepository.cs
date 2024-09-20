@@ -8,8 +8,8 @@ public interface IEventsRepository
     Task<Event?> GetById(Guid id);
     Task<Event?> GetByTitle(string title);
 
-    Task<List<Event?>> GetByFilters(string? title, string? location, DateTime? startDate,
-        DateTime? endDate, Guid? categoryId, int? page, int? size);
+    Task<(List<Event?>, int)> GetByFilters(string? title, string? location, DateTime? startDate,
+        DateTime? endDate, Guid? categoryId, Guid? userId, int? page, int? size);
 
     Task<List<Event>> GetByPage(int page, int size);
     Task<Guid> Create(Event receivedEvent);
