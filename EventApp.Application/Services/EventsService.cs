@@ -30,15 +30,16 @@ public class EventsService : IEventsService
     }
 
     public async Task<List<Event?>> GetEventByFilters(string? title, string? location, DateTime? startDate,
-        DateTime? endDate,
-        Guid? category)
+        DateTime? endDate, Guid? category, int? page, int? size)
     {
         return await _unitOfWork.Events.GetByFilters(
             title,
             location, 
             startDate, 
             endDate, 
-            category
+            category,
+            page,
+            size
         );
     }
 

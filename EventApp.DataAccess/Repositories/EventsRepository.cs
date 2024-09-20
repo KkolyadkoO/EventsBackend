@@ -46,7 +46,7 @@ public class EventsRepository : IEventsRepository
     }
 
     public async Task<List<Event?>> GetByFilters(string? title, string? location, DateTime? startDate,
-        DateTime? endDate, Guid? categoryId)
+        DateTime? endDate, Guid? categoryId, int? page, int? size)
     {
         var query = _dbContex.EventEntities.AsNoTracking();
         if (!string.IsNullOrWhiteSpace(title))
@@ -71,6 +71,11 @@ public class EventsRepository : IEventsRepository
         if (endDate.HasValue)
         {
             query = query.Where(e => e.Date <= endDate.Value);
+        }
+
+        if (page.HasValue && size.HasValue)
+        {
+            query = query.Skip((int)((page - 1) * size)).Take((int)size);
         }
 
         var events = await query

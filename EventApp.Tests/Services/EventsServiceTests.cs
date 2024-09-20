@@ -84,10 +84,12 @@ public class EventsServiceTests
         };
 
         _eventRepositoryMock
-            .Setup(e => e.GetByFilters(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>(), It.IsAny<Guid?>()))
+            .Setup(e => e.GetByFilters(It.IsAny<string>(), It.IsAny<string>(),
+                It.IsAny<DateTime?>(), It.IsAny<DateTime?>(), It.IsAny<Guid?>(),
+                It.IsAny<int?>(), It.IsAny<int?>()))
             .ReturnsAsync(events);
 
-        var result = await _eventsService.GetEventByFilters("Filtered Event", null, null, null, null);
+        var result = await _eventsService.GetEventByFilters("Filtered Event", null, null, null, null, null, null);
 
         Assert.NotNull(result);
         Assert.Single(result);
