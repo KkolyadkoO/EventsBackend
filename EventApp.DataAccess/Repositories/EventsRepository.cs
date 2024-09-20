@@ -73,6 +73,8 @@ public class EventsRepository : IEventsRepository
             query = query.Where(e => e.Date <= endDate.Value);
         }
 
+        query = query.OrderBy(e => e.Date);
+        
         if (page.HasValue && size.HasValue)
         {
             query = query.Skip((int)((page - 1) * size)).Take((int)size);
@@ -81,7 +83,6 @@ public class EventsRepository : IEventsRepository
         var events = await query
             .AsNoTracking()
             .Include(e => e.Members)
-            .OrderBy(e => e.Date)
             .ToListAsync();
         return _mapper.Map<List<Event>>(events);
     }

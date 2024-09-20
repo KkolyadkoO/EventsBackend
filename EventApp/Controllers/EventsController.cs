@@ -38,7 +38,7 @@ public class EventsController : ControllerBase
     }
 
     [HttpGet("filter/")]
-    public async Task<ActionResult<List<EventsResponse>>> GetFilterEvents([FromBody] EventFilterRequest filterRequest)
+    public async Task<ActionResult<List<EventsResponse>>> GetFilterEvents([FromQuery] EventFilterRequest filterRequest)
     {
         var events = await _eventsService.GetEventByFilters(filterRequest.Title, filterRequest.Location,
             filterRequest.StartDate, filterRequest.EndDate, filterRequest.Category, filterRequest.page, filterRequest.pageSize);
