@@ -78,6 +78,22 @@ public class MembersOfEventController : ControllerBase
             , request.Email, request.LastName, request.EventId, request.UserId);
 
     }
+    [HttpDelete]
+    [Authorize]
+    public async Task<ActionResult> DeleteMemberByEventIdAndUserId([FromQuery]Guid eventId, Guid userId)
+    {
+        try
+        {
+            await _membersOfEventService.DeleteMemberOfEventByEventIdAndUserId(eventId, userId);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+           return BadRequest(e.Message);
+        }
+        
+    }
+
 
     [HttpDelete("{Id:guid}")]
     [Authorize]

@@ -17,4 +17,5 @@ public interface IMembersOfEventRepository
         string email, string lastName, Guid eventId, Guid userId);
 
     Task<Guid> Delete(Guid id);
+    Task DeleteByEventIdAndUserId(Guid eventId, Guid userId);
 }

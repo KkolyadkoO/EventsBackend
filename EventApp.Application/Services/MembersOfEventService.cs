@@ -52,4 +52,16 @@ public class MembersOfEventService : IMembersOfEventService
     {
         return await _unitOfWork.Members.Delete(id);
     }
+
+    public async Task DeleteMemberOfEventByEventIdAndUserId(Guid eventId, Guid userId)
+    {
+        try
+        {
+            await _unitOfWork.Members.DeleteByEventIdAndUserId(eventId, userId);
+        }
+        catch (Exception e)
+        {
+            throw new Exception("UserId or EventId invalid");
+        }
+    }
 }

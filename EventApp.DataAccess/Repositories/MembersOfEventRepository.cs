@@ -109,5 +109,11 @@ public class MembersOfEventRepository : IMembersOfEventRepository
             .ExecuteDeleteAsync();
         return id;
     }
-    
+
+    public async Task DeleteByEventIdAndUserId(Guid eventId, Guid userId)
+    {
+        await _dbContex.MemberOfEventEntities
+            .Where(m => m.EventId == eventId && m.UserId == userId)
+            .ExecuteDeleteAsync();
+    }
 }

@@ -18,4 +18,5 @@ public interface IMembersOfEventService
         string email, string lastName, Guid eventId, Guid userId);
 
     Task<Guid> DeleteMemberOfEvent(Guid id);
+    Task DeleteMemberOfEventByEventIdAndUserId(Guid eventId, Guid userId);
 }
