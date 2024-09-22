@@ -57,11 +57,11 @@ public class EventsRepository : IEventsRepository
         
         if (!string.IsNullOrWhiteSpace(title))
         {
-            query = query.Where(e => e.Title.Contains(title));
+            query = query.Where(e => e.Title.ToLower().Contains(title.ToLower()));
         }
         if (!string.IsNullOrWhiteSpace(location))
         {
-            query = query.Where(e => e.Location.Contains(location));
+            query = query.Where(e => e.Location.ToLower().Contains(location.ToLower()));
         }
 
         if (categoryId.HasValue && categoryId != Guid.Empty)
