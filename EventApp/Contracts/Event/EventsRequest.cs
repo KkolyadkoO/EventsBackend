@@ -4,7 +4,7 @@ public record EventsRequest(
     string Title,
     string Description,
     DateTime Date,
-    string Location,
+    Guid LocationId,
     int maxNumberOfMembers,
     Guid CategoryId,
     string ImageUrl

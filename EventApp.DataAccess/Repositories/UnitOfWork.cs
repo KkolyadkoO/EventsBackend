@@ -10,6 +10,7 @@ public class UnitOfWork : IUnitOfWork
     private readonly IMapper _mapper;
 
     public ICategoryOfEventsRepository Categories { get; private set; }
+    public ILocationOfEventsRepository Locations { get; private set; }
     public IEventsRepository Events { get; private set; }
     public IMembersOfEventRepository Members { get; private set; }
     public IUserRepository Users { get; private set; }
@@ -26,6 +27,7 @@ public class UnitOfWork : IUnitOfWork
         Members = new MembersOfEventRepository(_context, _mapper);
         Users = new UserRepository(_context,_mapper);
         RefreshTokens = new RefreshTokenRepository(_context, _mapper);
+        Locations = new LocationOfEventsRepository(_context, _mapper);
     }
 
     public void Dispose()

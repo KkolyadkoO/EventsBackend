@@ -5,7 +5,7 @@ public record EventsResponse(
       string Title,
       string Description,
       DateTime Date,
-      string Location,
+      Guid LocationId,
       Guid CategoryId,
       int MaxNumberOfMembers,
       int NumberOfMembers,

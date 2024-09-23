@@ -12,6 +12,8 @@ public class EventAppDBContext(DbContextOptions<EventAppDBContext> options) : Db
     public DbSet<UserEntity> UserEntities { get; set; }
     
     public DbSet<RefreshTokenEntity> RefreshTokenEntities { get; set; }
+    
+    public DbSet<LocationOfEventEntity> LocationsOfEventEntities { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

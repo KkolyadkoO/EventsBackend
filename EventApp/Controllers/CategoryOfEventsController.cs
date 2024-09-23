@@ -16,7 +16,7 @@ public class CategoryOfEventsController : ControllerBase
         _categoryOfEventsService = categoryOfEventsService;
     }
     [HttpGet]
-    public async Task<ActionResult<List<CategoryOfEventsResponse>>> GetEvents()
+    public async Task<ActionResult<List<CategoryOfEventsResponse>>> GetCategories()
     {
         var events = await _categoryOfEventsService.GetAllCategoryOfEvents();
         var response = events.Select(e => new CategoryOfEventsResponse(e.Id,e.Title));
@@ -69,6 +69,66 @@ public class CategoryOfEventsController : ControllerBase
     public async Task<ActionResult<Guid>> DeleteCategory(Guid id)
     {
         return await _categoryOfEventsService.DeleteCategoryOfEvent(id);
+    }
+    
+}
+[ApiController]
+[Route("api/[controller]")]
+public class LocationOfEventsController : ControllerBase
+{
+    private readonly ILocationOfEventsService _locationOfEventsService;
+
+    public LocationOfEventsController(ILocationOfEventsService locationOfEventsService)
+    {
+        _locationOfEventsService = locationOfEventsService;
+    }
+    [HttpGet]
+    public async Task<ActionResult<List<LocationOfEventsResponse>>> GetLocations()
+    {
+        var events = await _locationOfEventsService.GetAllLocationOfEvents();
+        var response = events.Select(e => new CategoryOfEventsResponse(e.Id,e.Title));
+        
+        return Ok(response);
+    }
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<LocationOfEventsResponse>> GetLocationOfEventsById(Guid id)
+    {
+        var categoryOfEvent = await _locationOfEventsService.GetLocationOfEventById(id);
+        var response = new LocationOfEventsResponse(categoryOfEvent.Id, categoryOfEvent.Title);
+        return Ok(response);
+    }
+
+    [HttpPost]
+    [Authorize(Policy = "AdminOnly")]
+    public async Task<ActionResult<Guid>> CreateLocation([FromBody] LocationOfEventsRequest request)
+    {
+        var locationOfEvent = new LocationOfEvent(
+            Guid.NewGuid(),
+            request.Title);
+
+        try
+        {
+            var result = await _locationOfEventsService.AddLocationOfEvent(locationOfEvent);
+            return Ok(result);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    [HttpPut("{id:guid}")]
+    [Authorize(Policy = "AdminOnly")]
+    public async Task<ActionResult<Guid>> UpdateLocation(Guid id, [FromBody] LocationOfEventsRequest request)
+    {
+        return await _locationOfEventsService.UpdateLocationOfEvent(id, request.Title);
+    }
+
+    [HttpDelete("{id:guid}")]
+    [Authorize(Policy = "AdminOnly")]
+    public async Task<ActionResult<Guid>> DeleteLocation(Guid id)
+    {
+        return await _locationOfEventsService.DeleteLocationOfEvent(id);
     }
     
 }

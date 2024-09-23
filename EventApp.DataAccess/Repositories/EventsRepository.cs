@@ -10,7 +10,7 @@ public class EventsRepository : IEventsRepository
 {
     private readonly EventAppDBContext _dbContex;
     private readonly IMapper _mapper;
-    
+
     public EventsRepository(EventAppDBContext dbContext, IMapper mapper)
     {
         _dbContex = dbContext;
@@ -26,10 +26,10 @@ public class EventsRepository : IEventsRepository
             .ToListAsync();
         return _mapper.Map<List<Event>>(eventEntities);
     }
-   
+
     public async Task<Event?> GetById(Guid id)
     {
-        var findedEvent =  await _dbContex.EventEntities
+        var findedEvent = await _dbContex.EventEntities
             .AsNoTracking()
             .Include(e => e.Members)
             .FirstOrDefaultAsync(e => e.Id == id);
@@ -45,7 +45,7 @@ public class EventsRepository : IEventsRepository
         return _mapper.Map<Event?>(findedEvent);
     }
 
-    public async Task<(List<Event?>,int)> GetByFilters(string? title, string? location, DateTime? startDate,
+    public async Task<(List<Event?>, int)> GetByFilters(string? title, Guid? locationId, DateTime? startDate,
         DateTime? endDate, Guid? categoryId, Guid? userId, int? page, int? size)
     {
         var query = _dbContex.EventEntities.AsNoTracking();
@@ -54,14 +54,15 @@ public class EventsRepository : IEventsRepository
         {
             query = query.Where(e => e.Members.Any(m => m.UserId == userId));
         }
-        
+
         if (!string.IsNullOrWhiteSpace(title))
         {
             query = query.Where(e => e.Title.ToLower().Contains(title.ToLower()));
         }
-        if (!string.IsNullOrWhiteSpace(location))
+
+        if (locationId.HasValue && locationId != Guid.Empty)
         {
-            query = query.Where(e => e.Location.ToLower().Contains(location.ToLower()));
+            query = query.Where(e => e.LocationId == locationId.Value);
         }
 
         if (categoryId.HasValue && categoryId != Guid.Empty)
@@ -81,7 +82,7 @@ public class EventsRepository : IEventsRepository
 
         query = query.OrderBy(e => e.Date);
         var countOfEvents = query.Count();
-        
+
         if (page.HasValue && size.HasValue)
         {
             query = query.Skip((int)((page - 1) * size)).Take((int)size);
@@ -108,14 +109,18 @@ public class EventsRepository : IEventsRepository
     public async Task<Guid> Create(Event receivedEvent)
     {
         var foundedCategory = _dbContex.CategoryOfEventEntities
-            .AsNoTracking()
-            .FirstOrDefault(e => e.Id == receivedEvent.CategoryId) 
+                                  .AsNoTracking()
+                                  .FirstOrDefault(e => e.Id == receivedEvent.CategoryId)
                               ?? throw new InvalidOperationException("Category with the same Id does not exists.");
+        var foundedLocation = _dbContex.LocationsOfEventEntities
+                                  .AsNoTracking()
+                                  .FirstOrDefault(e => e.Id == receivedEvent.LocationId)
+                              ?? throw new InvalidOperationException("Location with the same Id does not exists.");
         var newEvent = new EventEntity
         {
             Id = receivedEvent.Id,
             Title = receivedEvent.Title,
-            Location = receivedEvent.Location,
+            LocationId = receivedEvent.LocationId,
             Date = receivedEvent.Date,
             CategoryId = foundedCategory.Id,
             Description = receivedEvent.Description,
@@ -123,23 +128,28 @@ public class EventsRepository : IEventsRepository
             ImageUrl = receivedEvent.ImageUrl,
         };
         await _dbContex.EventEntities.AddAsync(newEvent);
-        
+
         return newEvent.Id;
     }
-    
-    public async Task<Guid> Update(Guid id, string title, string location, DateTime date, Guid category,
+
+    public async Task<Guid> Update(Guid id, string title, Guid location, DateTime date, Guid category,
         string description,
         int maxNumberOfMembers, string imageUrl)
     {
         var foundedCategory = _dbContex.CategoryOfEventEntities
-            .AsNoTracking()
-            .FirstOrDefault(e => e.Id == category) 
-                              ?? throw new InvalidOperationException("Category with the same Id does not exists.");;
+                                  .AsNoTracking()
+                                  .FirstOrDefault(e => e.Id == category)
+                              ?? throw new InvalidOperationException("Category with the same Id does not exists.");
+        var foundedLocation = _dbContex.LocationsOfEventEntities
+                                  .AsNoTracking()
+                                  .FirstOrDefault(e => e.Id == location)
+                              ?? throw new InvalidOperationException("Location with the same Id does not exists.");
+        ;
         await _dbContex.EventEntities
             .Where(e => e.Id == id)
             .ExecuteUpdateAsync(s =>
-                    s.SetProperty(c => c.Title, title)
-                    .SetProperty(c => c.Location, location)
+                s.SetProperty(c => c.Title, title)
+                    .SetProperty(c => c.LocationId, foundedLocation.Id)
                     .SetProperty(c => c.Date, date)
                     .SetProperty(c => c.CategoryId, foundedCategory.Id)
                     .SetProperty(c => c.Description, description)

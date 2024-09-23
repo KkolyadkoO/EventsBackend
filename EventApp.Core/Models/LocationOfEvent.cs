@@ -1,8 +1,8 @@
-﻿namespace EventApp.Core.Models;
+namespace EventApp.Core.Models;
 
-public class CategoryOfEvent
+public class LocationOfEvent
 {
-    public CategoryOfEvent(Guid id, string title)
+    public LocationOfEvent(Guid id, string title)
     {
         Id = id;
         Title = title;

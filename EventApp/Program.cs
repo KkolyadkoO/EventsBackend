@@ -61,6 +61,7 @@ builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IEventsService, EventsService>();
 builder.Services.AddScoped<ICategoryOfEventsService, CategoryOfEventsService>();
+builder.Services.AddScoped<ILocationOfEventsService, LocationOfEventsService>();
 builder.Services.AddScoped<IMembersOfEventService, MembersOfEventService>();
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 

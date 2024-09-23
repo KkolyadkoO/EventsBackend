@@ -22,7 +22,7 @@ public class EventsController : ControllerBase
     {
         var foundEvent = await _eventsService.GetEventById(id);
         var response = new EventsResponse(foundEvent.Id, foundEvent.Title, foundEvent.Description,
-            foundEvent.Date, foundEvent.Location, foundEvent.CategoryId, foundEvent.MaxNumberOfMembers,
+            foundEvent.Date, foundEvent.LocationId, foundEvent.CategoryId, foundEvent.MaxNumberOfMembers,
             foundEvent.Members.Count, foundEvent.ImageUrl);
         return Ok(response);
     }
@@ -32,7 +32,7 @@ public class EventsController : ControllerBase
     {
         var events = await _eventsService.GetAllEvents();
         var response = events.Select(e => new EventsResponse(e.Id, e.Title, e.Description, e.Date
-            , e.Location, e.CategoryId, e.MaxNumberOfMembers, e.Members.Count, e.ImageUrl));
+            , e.LocationId, e.CategoryId, e.MaxNumberOfMembers, e.Members.Count, e.ImageUrl));
 
         return Ok(response);
     }
@@ -40,11 +40,11 @@ public class EventsController : ControllerBase
     [HttpGet("filter/")]
     public async Task<ActionResult> GetFilterEvents([FromQuery] EventFilterRequest filterRequest)
     {
-        var (events,countOfEvents) = await _eventsService.GetEventByFilters(filterRequest.Title, filterRequest.Location,
+        var (events,countOfEvents) = await _eventsService.GetEventByFilters(filterRequest.Title, filterRequest.LocationId,
             filterRequest.StartDate, filterRequest.EndDate, filterRequest.Category,
             filterRequest.UserId, filterRequest.Page, filterRequest.PageSize);
         var response = events.Select(e => new EventsResponse(e.Id, e.Title, e.Description, e.Date
-            , e.Location, e.CategoryId, e.MaxNumberOfMembers, e.Members.Count, e.ImageUrl));
+            , e.LocationId, e.CategoryId, e.MaxNumberOfMembers, e.Members.Count, e.ImageUrl));
 
         return Ok(new
         {
@@ -58,7 +58,7 @@ public class EventsController : ControllerBase
     public async Task<ActionResult<Guid>> CreateEvent(EventsRequest request)
     {
         var newEvent = new Event(Guid.NewGuid(), request.Title, request.Description, request.Date.ToUniversalTime(),
-            request.Location, request.CategoryId, request.maxNumberOfMembers, new List<MemberOfEvent>(),
+            request.LocationId, request.CategoryId, request.maxNumberOfMembers, new List<MemberOfEvent>(),
             request.ImageUrl);
         try
         {
@@ -77,7 +77,7 @@ public class EventsController : ControllerBase
     {
         try
         {
-            return await _eventsService.UpdateEvent(id, request.Title, request.Location, request.Date.ToUniversalTime(),
+            return await _eventsService.UpdateEvent(id, request.Title, request.LocationId, request.Date.ToUniversalTime(),
                 request.CategoryId, request.Description, request.maxNumberOfMembers, request.ImageUrl);
         }
         catch (Exception e)

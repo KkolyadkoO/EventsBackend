@@ -29,12 +29,12 @@ public class EventsService : IEventsService
         return await _unitOfWork.Events.GetByTitle(title);
     }
 
-    public async Task<(List<Event?>, int)> GetEventByFilters(string? title, string? location, DateTime? startDate,
+    public async Task<(List<Event?>, int)> GetEventByFilters(string? title, Guid? locationId, DateTime? startDate,
         DateTime? endDate, Guid? category, Guid? userId, int? page, int? size)
     {
         return await _unitOfWork.Events.GetByFilters(
             title,
-            location,
+            locationId,
             startDate,
             endDate,
             category,
@@ -63,12 +63,12 @@ public class EventsService : IEventsService
         }
     }
 
-    public async Task<Guid> UpdateEvent(Guid id, string title, string location, DateTime date, Guid category,
+    public async Task<Guid> UpdateEvent(Guid id, string title, Guid locationId, DateTime date, Guid category,
         string description, int maxNumberOfMembers, string imageUrl)
     {
         try
         {
-            return await _unitOfWork.Events.Update(id, title, location, date, category, description, maxNumberOfMembers,
+            return await _unitOfWork.Events.Update(id, title, locationId, date, category, description, maxNumberOfMembers,
                 imageUrl);
         }
         catch (Exception e)

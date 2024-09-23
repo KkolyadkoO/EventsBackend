@@ -1,4 +1,5 @@
-﻿using EventApp.DataAccess.Entities;
+﻿using EventApp.Core.Models;
+using EventApp.DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -19,6 +20,11 @@ public class EventConfiguration : IEntityTypeConfiguration<EventEntity>
             .HasOne<CategoryOfEventEntity>()
             .WithMany()
             .HasForeignKey(e => e.CategoryId)
+            .OnDelete(DeleteBehavior.Restrict);
+        builder
+            .HasOne<LocationOfEventEntity>()
+            .WithMany()
+            .HasForeignKey(e => e.LocationId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }

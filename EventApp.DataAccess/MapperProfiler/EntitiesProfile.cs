@@ -15,6 +15,8 @@ public class EntitiesProfile : Profile
         CreateMap<RefreshTokenEntity, RefreshToken>().ReverseMap();
 
         CreateMap<CategoryOfEventEntity, CategoryOfEvent>().ReverseMap();
+        
+        CreateMap<LocationOfEventEntity, LocationOfEvent>().ReverseMap();
 
         CreateMap<EventEntity, Event>().ReverseMap();
     }

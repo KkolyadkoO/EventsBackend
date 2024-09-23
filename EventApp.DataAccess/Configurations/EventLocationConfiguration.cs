@@ -1,12 +1,12 @@
-﻿using EventApp.DataAccess.Entities;
+using EventApp.DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EventApp.DataAccess.Configurations;
 
-public class EventCategoryConfiguration : IEntityTypeConfiguration<CategoryOfEventEntity>
+public class EventLocationConfiguration : IEntityTypeConfiguration<LocationOfEventEntity>
 {
-    public void Configure(EntityTypeBuilder<CategoryOfEventEntity> builder)
+    public void Configure(EntityTypeBuilder<LocationOfEventEntity> builder)
     {
         builder.HasKey(a => a.Id);
         
