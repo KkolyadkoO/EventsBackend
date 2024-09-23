@@ -51,7 +51,7 @@ public class CategoryOfEventsController : ControllerBase
             var result = await _categoryOfEventsService.AddCategoryOfEvent(categoryOfEvent);
             return Ok(result);
         }
-        catch (InvalidOperationException ex)
+        catch (Exception ex)
         {
             return BadRequest(new { message = ex.Message });
         }

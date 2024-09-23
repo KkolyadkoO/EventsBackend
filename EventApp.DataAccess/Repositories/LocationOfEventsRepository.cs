@@ -35,21 +35,21 @@ public class LocationOfEventsRepository : ILocationOfEventsRepository
 
     public async Task<Guid> Add(Guid id, string title)
     {
+        var foundedLocation = _dbContext.LocationsOfEventEntities
+            .AsNoTracking()
+            .FirstOrDefault(e => e.Title == title);
+        if (foundedLocation != null)
+        {
+            throw new InvalidOperationException("Location with the same title already exists. ");
+
+        }
         var locationOfEvent = new LocationOfEventEntity
         {
             Id = id,
             Title = title,
         };
-
-        try
-        {
             await _dbContext.LocationsOfEventEntities.AddAsync(locationOfEvent);
-        }
-        catch (DbUpdateException ex)
-        {
-            throw new InvalidOperationException("Location with the same title already exists. " + ex.Message);
-        }
-
+        
         return locationOfEvent.Id;
     }
     public async Task<Guid> Update(Guid id, string title)

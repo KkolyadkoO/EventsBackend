@@ -9,7 +9,7 @@ public class CategoryOfEventsRepository : ICategoryOfEventsRepository
 {
     private readonly EventAppDBContext _dbContext;
     private readonly IMapper _mapper;
-    
+
     public CategoryOfEventsRepository(EventAppDBContext dbContext, IMapper mapper)
     {
         _dbContext = dbContext;
@@ -24,10 +24,10 @@ public class CategoryOfEventsRepository : ICategoryOfEventsRepository
             .ToListAsync();
         return _mapper.Map<List<CategoryOfEvent>>(eventCategoriesEntities);
     }
-   
+
     public async Task<CategoryOfEvent> GetById(Guid id)
     {
-        var foundCategoryOfEvent =  await _dbContext.CategoryOfEventEntities
+        var foundCategoryOfEvent = await _dbContext.CategoryOfEventEntities
             .AsNoTracking()
             .FirstOrDefaultAsync(e => e.Id == id);
         return _mapper.Map<CategoryOfEvent>(foundCategoryOfEvent);
@@ -43,23 +43,25 @@ public class CategoryOfEventsRepository : ICategoryOfEventsRepository
 
     public async Task<Guid> Add(Guid id, string title)
     {
+        var foundedCategory = await _dbContext.CategoryOfEventEntities
+            .AsNoTracking()
+            .FirstOrDefaultAsync(e => e.Title == title);
+        if (foundedCategory != null)
+        {
+            throw new InvalidOperationException("Category with the same title already exists. ");
+        }
+
         var categoryOfEvent = new CategoryOfEventEntity
         {
             Id = id,
             Title = title,
         };
 
-        try
-        {
-            await _dbContext.CategoryOfEventEntities.AddAsync(categoryOfEvent);
-        }
-        catch (DbUpdateException ex)
-        {
-                throw new InvalidOperationException("Category with the same title already exists. " + ex.Message);
-        }
+        await _dbContext.CategoryOfEventEntities.AddAsync(categoryOfEvent);
 
         return categoryOfEvent.Id;
     }
+
     public async Task<Guid> Update(Guid id, string title)
     {
         await _dbContext.CategoryOfEventEntities
