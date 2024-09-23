@@ -2,6 +2,7 @@
 using EventApp.Core.Exceptions;
 using EventApp.Core.Models;
 using EventApp.DataAccess.Repositories;
+using Microsoft.AspNetCore.Http;
 
 namespace EventApp.Application;
 
@@ -49,11 +50,11 @@ public class EventsService : IEventsService
         return await _unitOfWork.Events.GetByPage(page, size);
     }
 
-    public async Task<Guid> AddEvent(Event receivedEvent)
+    public async Task<Guid> AddEvent(Event receivedEvent, IFormFile imageFile)
     {
         try
         {
-            var id = await _unitOfWork.Events.Create(receivedEvent);
+            var id = await _unitOfWork.Events.Create(receivedEvent, imageFile);
             _unitOfWork.Complete();
             return id;
         }
@@ -64,12 +65,12 @@ public class EventsService : IEventsService
     }
 
     public async Task<Guid> UpdateEvent(Guid id, string title, Guid locationId, DateTime date, Guid category,
-        string description, int maxNumberOfMembers, string imageUrl)
+        string description, int maxNumberOfMembers, IFormFile? imageFile)
     {
         try
         {
             return await _unitOfWork.Events.Update(id, title, locationId, date, category, description, maxNumberOfMembers,
-                imageUrl);
+                imageFile);
         }
         catch (Exception e)
         {

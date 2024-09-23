@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EventApp.DataAccess.Migrations
 {
     [DbContext(typeof(EventAppDBContext))]
-    [Migration("20240916201323_RefreshTokenUpdate")]
-    partial class RefreshTokenUpdate
+    [Migration("20240923191514_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -63,9 +63,8 @@ namespace EventApp.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Location")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<Guid>("LocationId")
+                        .HasColumnType("uuid");
 
                     b.Property<int>("MaxNumberOfMembers")
                         .HasColumnType("integer");
@@ -78,7 +77,24 @@ namespace EventApp.DataAccess.Migrations
 
                     b.HasIndex("CategoryId");
 
+                    b.HasIndex("LocationId");
+
                     b.ToTable("EventEntities");
+                });
+
+            modelBuilder.Entity("EventApp.DataAccess.Entities.LocationOfEventEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("LocationsOfEventEntities");
                 });
 
             modelBuilder.Entity("EventApp.DataAccess.Entities.MemberOfEventEntity", b =>
@@ -181,6 +197,12 @@ namespace EventApp.DataAccess.Migrations
                     b.HasOne("EventApp.DataAccess.Entities.CategoryOfEventEntity", null)
                         .WithMany()
                         .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("EventApp.DataAccess.Entities.LocationOfEventEntity", null)
+                        .WithMany()
+                        .HasForeignKey("LocationId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });

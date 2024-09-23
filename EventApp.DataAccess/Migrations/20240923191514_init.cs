@@ -24,6 +24,18 @@ namespace EventApp.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "LocationsOfEventEntities",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Title = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LocationsOfEventEntities", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "UserEntities",
                 columns: table => new
                 {
@@ -46,7 +58,7 @@ namespace EventApp.DataAccess.Migrations
                     Title = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
                     Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Location = table.Column<string>(type: "text", nullable: false),
+                    LocationId = table.Column<Guid>(type: "uuid", nullable: false),
                     CategoryId = table.Column<Guid>(type: "uuid", nullable: false),
                     MaxNumberOfMembers = table.Column<int>(type: "integer", nullable: false),
                     ImageUrl = table.Column<string>(type: "text", nullable: false)
@@ -60,6 +72,12 @@ namespace EventApp.DataAccess.Migrations
                         principalTable: "CategoryOfEventEntities",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_EventEntities_LocationsOfEventEntities_LocationId",
+                        column: x => x.LocationId,
+                        principalTable: "LocationsOfEventEntities",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -69,8 +87,7 @@ namespace EventApp.DataAccess.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
                     Token = table.Column<string>(type: "text", nullable: false),
-                    Expires = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    IsRevoked = table.Column<bool>(type: "boolean", nullable: false)
+                    Expires = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -125,6 +142,11 @@ namespace EventApp.DataAccess.Migrations
                 column: "CategoryId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_EventEntities_LocationId",
+                table: "EventEntities",
+                column: "LocationId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_MemberOfEventEntities_EventId",
                 table: "MemberOfEventEntities",
                 column: "EventId");
@@ -169,6 +191,9 @@ namespace EventApp.DataAccess.Migrations
 
             migrationBuilder.DropTable(
                 name: "CategoryOfEventEntities");
+
+            migrationBuilder.DropTable(
+                name: "LocationsOfEventEntities");
         }
     }
 }

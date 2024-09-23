@@ -1,4 +1,5 @@
 using EventApp.Core.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace EventApp.DataAccess.Repositories;
 
@@ -12,10 +13,10 @@ public interface IEventsRepository
         DateTime? endDate, Guid? categoryId, Guid? userId, int? page, int? size);
 
     Task<List<Event>> GetByPage(int page, int size);
-    Task<Guid> Create(Event receivedEvent);
+    Task<Guid> Create(Event receivedEvent, IFormFile imageFile);
 
-    Task<Guid> Update(Guid id, string title, Guid location, DateTime date, Guid category, string description,
-        int maxNumberOfMembers, string imageUrl);
+    Task<Guid> Update(Guid id, string title, Guid location, DateTime date, Guid category,
+        string description, int maxNumberOfMembers, IFormFile? imageFile);
 
     Task<Guid> Delete(Guid id);
 }

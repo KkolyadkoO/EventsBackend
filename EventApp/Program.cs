@@ -111,7 +111,7 @@ app.UseCookiePolicy(new CookiePolicyOptions
     HttpOnly = HttpOnlyPolicy.Always,
     Secure = CookieSecurePolicy.Always
 });
-
+app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseCors("AllowLocalhost3000");

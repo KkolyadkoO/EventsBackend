@@ -55,14 +55,14 @@ public class EventsController : ControllerBase
 
     [HttpPost]
     [Authorize(Policy = "AdminOnly")]
-    public async Task<ActionResult<Guid>> CreateEvent(EventsRequest request)
+    public async Task<ActionResult<Guid>> CreateEvent([FromForm]EventsRequest request, IFormFile imageFile)
     {
         var newEvent = new Event(Guid.NewGuid(), request.Title, request.Description, request.Date.ToUniversalTime(),
             request.LocationId, request.CategoryId, request.maxNumberOfMembers, new List<MemberOfEvent>(),
-            request.ImageUrl);
+            "");
         try
         {
-            await _eventsService.AddEvent(newEvent);
+            await _eventsService.AddEvent(newEvent, imageFile);
             return Ok(newEvent.Id);
         }
         catch (Exception e)
@@ -73,12 +73,12 @@ public class EventsController : ControllerBase
 
     [HttpPut("{id:guid}")]
     [Authorize(Policy = "AdminOnly")]
-    public async Task<ActionResult<Guid>> UpdateEvent(Guid id, EventsRequest request)
+    public async Task<ActionResult<Guid>> UpdateEvent(Guid id,[FromForm] EventsRequest request, IFormFile? imageFile)
     {
         try
         {
             return await _eventsService.UpdateEvent(id, request.Title, request.LocationId, request.Date.ToUniversalTime(),
-                request.CategoryId, request.Description, request.maxNumberOfMembers, request.ImageUrl);
+                request.CategoryId, request.Description, request.maxNumberOfMembers, imageFile);
         }
         catch (Exception e)
         {

@@ -1,4 +1,5 @@
 using EventApp.Core.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace EventApp.Application;
 
@@ -12,10 +13,10 @@ public interface IEventsService
         DateTime? endDate, Guid? category, Guid? userId, int? page, int? size);
 
     Task<List<Event>> GetEventByPage(int page, int size);
-    Task<Guid> AddEvent(Event receivedEvent);
+    Task<Guid> AddEvent(Event receivedEvent, IFormFile imageFile);
 
-    Task<Guid> UpdateEvent(Guid id, string title, Guid location, DateTime date, Guid category,
-        string description, int maxNumberOfMembers, string imageUrl);
+    Task<Guid> UpdateEvent(Guid id, string title, Guid locationId, DateTime date, Guid category,
+        string description, int maxNumberOfMembers, IFormFile? imageFile);
 
     Task<Guid> DeleteEvent(Guid id);
 }
